@@ -1,3 +1,4 @@
+#==================imports===================
 import sqlite3
 import re
 import random
@@ -8,6 +9,8 @@ from tkinter import ttk
 from time import strftime
 from datetime import date
 from tkinter import scrolledtext as tkst
+#============================================
+
 
 
 root = Tk()
@@ -29,6 +32,8 @@ cust_num = StringVar()
 cust_new_bill = StringVar()
 cust_search_bill = StringVar()
 bill_date = StringVar()
+
+
 
 with sqlite3.connect("./Database/store.db") as db:
     cur = db.cursor()
@@ -59,6 +64,7 @@ def login():
         page1.entry1.delete(0, END)
         page1.entry2.delete(0, END)
         #root.destroy()
+        root.withdraw()
         global biller
         global page2
         biller = Toplevel()
@@ -115,9 +121,10 @@ def cancel_login():
     adminn.destroy()
 
 def logout():
-    sure = messagebox.askyesno("Logout","Are you sure you want to logout?")
+    sure = messagebox.askyesno("Logout", "Are you sure you want to logout?", parent=biller)
     if sure == True:
         biller.destroy()
+        root.deiconify()
         page1.entry1.delete(0, END)
         page1.entry2.delete(0, END)
 
@@ -267,12 +274,10 @@ class employee:
 
 
 def exitt():
-    sure = messagebox.askyesno("Exit","Are you sure you want to exit?")
+    sure = messagebox.askyesno("Exit","Are you sure you want to exit?", parent=biller)
     if sure == True:
         biller.destroy()
         root.destroy()
-
-
 
 
 class bill_window:
@@ -410,7 +415,7 @@ class bill_window:
         self.button7.configure(command=self.add_to_cart)
 
         self.button8 = Button(biller)
-        self.button8.place(relx=0.232, rely=0.734, width=86, height=26)
+        self.button8.place(relx=0.231, rely=0.734, width=84, height=26)
         self.button8.configure(relief="flat")
         self.button8.configure(overrelief="flat")
         self.button8.configure(activebackground="#CF1E14")
@@ -425,11 +430,17 @@ class bill_window:
         text_font = ("Poppins", "8")
         self.combo1 = ttk.Combobox(biller)
         self.combo1.place(relx=0.035, rely=0.408, width=477, height=26)
-        self.combo1.configure(values=[
-                                    "January", 
-                                    "February",
-                                    "March",
-                                    "April"])
+
+        find_category = "SELECT product_cat FROM raw_inventory"
+        cur.execute(find_category)
+        result1 = cur.fetchall()
+        cat = []
+        for i in range(len(result1)):
+            if(result1[i][0] not in cat):
+                cat.append(result1[i][0])
+
+
+        self.combo1.configure(values=cat)
         self.combo1.configure(state="readonly")
         self.combo1.configure(font="-family {Poppins} -size 8")
         self.combo1.option_add("*TCombobox*Listbox.font", text_font)
@@ -438,32 +449,22 @@ class bill_window:
 
         self.combo2 = ttk.Combobox(biller)
         self.combo2.place(relx=0.035, rely=0.479, width=477, height=26)
-        self.combo2.configure(state="readonly")
         self.combo2.configure(font="-family {Poppins} -size 8")
-        self.combo2.option_add("*TCombobox*Listbox.font", text_font)
+        self.combo2.option_add("*TCombobox*Listbox.font", text_font) 
+        self.combo2.configure(state="disabled")
+
 
         self.combo3 = ttk.Combobox(biller)
         self.combo3.place(relx=0.035, rely=0.551, width=477, height=26)
-
-        
-        find_product = "SELECT product_name FROM inventory"
-        cur.execute(find_product)
-        results = cur.fetchall()
-        val = []
-        for i in range(len(results)):
-            val.append(results[i][0])
-
-
-        self.combo3.configure(values=val)
-        self.combo3.configure(state="readonly")
+        self.combo3.configure(state="disabled")
         self.combo3.configure(font="-family {Poppins} -size 8")
         self.combo3.option_add("*TCombobox*Listbox.font", text_font)
-        self.combo3.bind("<<ComboboxSelected>>", self.show_qty)
 
         self.entry4 = ttk.Entry(biller)
         self.entry4.place(relx=0.035, rely=0.629, width=477, height=26)
         self.entry4.configure(font="-family {Poppins} -size 8")
         self.entry4.configure(foreground="#000000")
+        self.entry4.configure(state="disabled")
 
         self.Scrolledtext1 = tkst.ScrolledText(top)
         self.Scrolledtext1.place(relx=0.439, rely=0.586, width=695, height=275)
@@ -471,15 +472,50 @@ class bill_window:
         self.Scrolledtext1.configure(font="-family {Podkova} -size 8")
         self.Scrolledtext1.configure(state="disabled")
 
+        self.combo1.bind("<<ComboboxSelected>>", self.get_category)
+        
+
+    def get_category(self, Event):
+        self.combo2.configure(state="readonly")
+        self.combo2.set('')
+        self.combo3.set('')
+        find_subcat = "SELECT product_subcat FROM raw_inventory WHERE product_cat = ?"
+        cur.execute(find_subcat, [self.combo1.get()])
+        result2 = cur.fetchall()
+        subcat = []
+        for j in range(len(result2)):
+            if(result2[j][0] not in subcat):
+                subcat.append(result2[j][0])
+        
+        self.combo2.configure(values=subcat)
+        self.combo2.bind("<<ComboboxSelected>>", self.get_subcat)
+
+    def get_subcat(self, Event):
+        self.combo3.configure(state="readonly")
+        self.combo3.set('')
+        find_product = "SELECT product_name FROM raw_inventory WHERE product_cat = ? and product_subcat = ?"
+        cur.execute(find_product, [self.combo1.get(), self.combo2.get()])
+        result3 = cur.fetchall()
+        pro = []
+        for k in range(len(result3)):
+            pro.append(result3[k][0])
+
+        self.combo3.configure(values=pro)
+        self.combo3.bind("<<ComboboxSelected>>", self.show_qty)
+        self.entry4.configure(state="disabled")
+        
+        
+        
 
     def show_qty(self, Event):
+        self.entry4.configure(state="normal")
         self.qty_label = Label(biller)
         self.qty_label.place(relx=0.033, rely=0.664, width=82, height=26)
         self.qty_label.configure(font="-family {Poppins} -size 8")
         self.qty_label.configure(anchor="w")
 
         product_name = self.combo3.get()
-        find_qty = "SELECT stock FROM inventory WHERE product_name = ?"
+        find_qty = "SELECT stock FROM raw_inventory WHERE product_name = ?"
         cur.execute(find_qty, [product_name])
         results = cur.fetchone()
         self.qty_label.configure(text="In Stock: {}".format(results[0]))
@@ -492,8 +528,8 @@ class bill_window:
         product_name = self.combo3.get()
         if(product_name!=""):
             product_qty = self.entry4.get()
-            find_sp = "SELECT sp, stock FROM inventory WHERE product_name = ?"
-            cur.execute(find_sp, [product_name])
+            find_mrp = "SELECT mrp, stock FROM raw_inventory WHERE product_name = ?"
+            cur.execute(find_mrp, [product_name])
             results = cur.fetchall()
             stock = results[0][1]
             if product_qty.isdigit()==True:
@@ -506,11 +542,11 @@ class bill_window:
                     self.Scrolledtext1.insert('insert', bill_text)
                     self.Scrolledtext1.configure(state="disabled")
                 else:
-                    messagebox.showerror("Oops!", "Out of stock. Check quantity.")
+                    messagebox.showerror("Oops!", "Out of stock. Check quantity.", parent=biller)
             else:
-                messagebox.showerror("Oops!", "Invalid quantity.")
+                messagebox.showerror("Oops!", "Invalid quantity.", parent=biller)
         else:
-            messagebox.showerror("Oops!", "Choose a product.")
+            messagebox.showerror("Oops!", "Choose a product.", parent=biller)
 
 
     def wel_bill(self):
@@ -552,13 +588,13 @@ class bill_window:
         strr = self.Scrolledtext1.get('1.0', END)
         self.wel_bill()
         if(cust_name.get()==""):
-            messagebox.showerror("Oops!", "Please enter a name.")
+            messagebox.showerror("Oops!", "Please enter a name.", parent=biller)
         elif(cust_num.get()==""):
-            messagebox.showerror("Oops!", "Please enter a number.")
+            messagebox.showerror("Oops!", "Please enter a number.", parent=biller)
         elif valid_phone(cust_num.get())==False:
-            messagebox.showerror("Oops!", "Please enter a valid number.")
+            messagebox.showerror("Oops!", "Please enter a valid number.", parent=biller)
         elif(len(self.cart)==0):
-            messagebox.showerror("Oops!", "Cart is empty.")
+            messagebox.showerror("Oops!", "Cart is empty.", parent=biller)
         else: 
             if strr.find('Total')==-1:
                 self.total_bill()
@@ -592,11 +628,11 @@ class bill_window:
                 for i in self.cart:
                     for j in i:
                         pass
-                    update_qty = "UPDATE inventory SET stock = stock - ? WHERE product_name = ?"
+                    update_qty = "UPDATE raw_inventory SET stock = stock - ? WHERE product_name = ?"
                     cur.execute(update_qty, [i[j], j])
                     db.commit()
 
-                messagebox.showinfo("Success!!", "Bill Generated")
+                messagebox.showinfo("Success!!", "Bill Generated", parent=biller)
 
     def clear_bill(self):
         self.wel_bill()
@@ -617,7 +653,7 @@ class bill_window:
         self.bill_message.configure(state="disabled")
         self.bill_date_message.configure(state="disabled")
         self.Scrolledtext1.configure(state="disabled")
-        self.totalsp = 0.00
+        
 
     def clear_selection(self):
         self.entry4.delete(0, END)
@@ -628,6 +664,10 @@ class bill_window:
         self.combo2.delete(0, END)
         self.combo3.delete(0, END)
         self.qty_label.configure(foreground="#ffffff")
+        self.combo2.configure(state="disabled")
+        self.combo3.configure(state="disabled")
+        self.entry4.configure(state="disabled")
+        self.totalsp = 0.00
         self.cart.clear()
         
     def search_bill(self):
@@ -655,7 +695,7 @@ class bill_window:
             self.Scrolledtext1.configure(state="disabled")
 
         else:
-            messagebox.showerror("Error 404", "Bill not found.")
+            messagebox.showerror("Error!!", "Bill not found.", parent=biller)
             self.entry3.delete(0, END)
             
 
@@ -663,6 +703,13 @@ class bill_window:
         string = strftime("%H:%M:%S %p")
         self.clock.config(text=string)
         self.clock.after(1000, self.time)
+
+
+class Inventory:
+    pass
+
+
+
 
 
 page1 = login_page(root)
