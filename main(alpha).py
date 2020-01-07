@@ -70,6 +70,7 @@ def login():
         biller = Toplevel()
         page2 = bill_window(biller)
         page2.time()
+        biller.protocol("WM_DELETE_WINDOW", exitt)
         biller.mainloop()
 
     else:
@@ -270,7 +271,39 @@ class employee:
         self.entry4.configure(show="*")
         self.entry4.configure(textvariable=new_passwd)
 
+class Item:
+    def __init__(self, name, price, qty):
+        self.product_name = name
+        self.price = price
+        self.qty = qty
 
+class Cart:
+    def __init__(self):
+        self.items = []
+        self.dictionary = {}
+
+    def add_item(self, item):
+        self.items.append(item)
+
+    def remove_item(self):
+        self.items.pop()
+
+    def remove_items(self):
+        self.items.clear()
+
+    def total(self):
+        total = 0.0
+        for i in self.items:
+            total += i.price * i.qty
+        return total
+
+    def isEmpty(self):
+        if len(self.items)==0:
+            return True
+        
+    def allCart(self):
+        for i in self.items:
+            self.dictionary.update({i.product_name:i.qty})
 
 
 def exitt():
@@ -363,7 +396,7 @@ class bill_window:
         self.button3.configure(command=self.total_bill)
 
         self.button4 = Button(biller)
-        self.button4.place(relx=0.141, rely=0.885, width=86, height=25)
+        self.button4.place(relx=0.141, rely=0.885, width=84, height=25)
         self.button4.configure(relief="flat")
         self.button4.configure(overrelief="flat")
         self.button4.configure(activebackground="#CF1E14")
@@ -402,7 +435,7 @@ class bill_window:
         self.button6.configure(command=exitt)
 
         self.button7 = Button(biller)
-        self.button7.place(relx=0.142, rely=0.734, width=86, height=26)
+        self.button7.place(relx=0.098, rely=0.734, width=86, height=26)
         self.button7.configure(relief="flat")
         self.button7.configure(overrelief="flat")
         self.button7.configure(activebackground="#CF1E14")
@@ -415,7 +448,7 @@ class bill_window:
         self.button7.configure(command=self.add_to_cart)
 
         self.button8 = Button(biller)
-        self.button8.place(relx=0.231, rely=0.734, width=84, height=26)
+        self.button8.place(relx=0.274, rely=0.734, width=84, height=26)
         self.button8.configure(relief="flat")
         self.button8.configure(overrelief="flat")
         self.button8.configure(activebackground="#CF1E14")
@@ -426,6 +459,19 @@ class bill_window:
         self.button8.configure(borderwidth="0")
         self.button8.configure(text="""Clear""")
         self.button8.configure(command=self.clear_selection)
+
+        self.button9 = Button(biller)
+        self.button9.place(relx=0.194, rely=0.734, width=68, height=26)
+        self.button9.configure(relief="flat")
+        self.button9.configure(overrelief="flat")
+        self.button9.configure(activebackground="#CF1E14")
+        self.button9.configure(cursor="hand2")
+        self.button9.configure(foreground="#ffffff")
+        self.button9.configure(background="#CF1E14")
+        self.button9.configure(font="-family {Poppins SemiBold} -size 10")
+        self.button9.configure(borderwidth="0")
+        self.button9.configure(text="""Remove""")
+        self.button9.configure(command=self.remove_product)
 
         text_font = ("Poppins", "8")
         self.combo1 = ttk.Combobox(biller)
@@ -489,6 +535,7 @@ class bill_window:
         
         self.combo2.configure(values=subcat)
         self.combo2.bind("<<ComboboxSelected>>", self.get_subcat)
+        self.combo3.configure(state="disabled")
 
     def get_subcat(self, Event):
         self.combo3.configure(state="readonly")
@@ -522,31 +569,115 @@ class bill_window:
         self.qty_label.configure(background="#ffffff")
         self.qty_label.configure(foreground="#333333")
     
-    totalsp = 0.00
-    cart = []
+    cart = Cart()
     def add_to_cart(self):
-        product_name = self.combo3.get()
-        if(product_name!=""):
-            product_qty = self.entry4.get()
-            find_mrp = "SELECT mrp, stock FROM raw_inventory WHERE product_name = ?"
-            cur.execute(find_mrp, [product_name])
-            results = cur.fetchall()
-            stock = results[0][1]
-            if product_qty.isdigit()==True:
-                if (stock-int(product_qty))>=0:
-                    sp = results[0][0]*int(product_qty)
-                    self.cart.append({product_name:product_qty})
-                    self.Scrolledtext1.configure(state="normal")
-                    bill_text = "{}\t\t\t\t\t\t{}\t\t\t\t\t   {}\n".format(product_name, product_qty, sp)
-                    self.totalsp+=sp
-                    self.Scrolledtext1.insert('insert', bill_text)
-                    self.Scrolledtext1.configure(state="disabled")
+        self.Scrolledtext1.configure(state="normal")
+        strr = self.Scrolledtext1.get('1.0', END)
+        if strr.find('Total')==-1:
+            product_name = self.combo3.get()
+            if(product_name!=""):
+                product_qty = self.entry4.get()
+                find_mrp = "SELECT mrp, stock FROM raw_inventory WHERE product_name = ?"
+                cur.execute(find_mrp, [product_name])
+                results = cur.fetchall()
+                stock = results[0][1]
+                mrp = results[0][0]
+                if product_qty.isdigit()==True:
+                    if (stock-int(product_qty))>=0:
+                        sp = mrp*int(product_qty)
+                        item = Item(product_name, mrp, int(product_qty))
+                        self.cart.add_item(item)
+                        self.Scrolledtext1.configure(state="normal")
+                        bill_text = "{}\t\t\t\t\t\t{}\t\t\t\t\t   {}\n".format(product_name, product_qty, sp)
+                        self.Scrolledtext1.insert('insert', bill_text)
+                        self.Scrolledtext1.configure(state="disabled")
+                    else:
+                        messagebox.showerror("Oops!", "Out of stock. Check quantity.", parent=biller)
                 else:
-                    messagebox.showerror("Oops!", "Out of stock. Check quantity.", parent=biller)
+                    messagebox.showerror("Oops!", "Invalid quantity.", parent=biller)
             else:
-                messagebox.showerror("Oops!", "Invalid quantity.", parent=biller)
+                messagebox.showerror("Oops!", "Choose a product.", parent=biller)
         else:
-            messagebox.showerror("Oops!", "Choose a product.", parent=biller)
+            self.Scrolledtext1.delete('1.0', END)
+            new_li = []
+            li = strr.split("\n")
+            for i in range(len(li)):
+                if len(li[i])!=0:
+                    if li[i].find('Total')==-1:
+                        new_li.append(li[i])
+                    else:
+                        break
+            for j in range(len(new_li)):
+                self.Scrolledtext1.insert('insert', new_li[j])
+                self.Scrolledtext1.insert('insert','\n')
+            product_name = self.combo3.get()
+            if(product_name!=""):
+                product_qty = self.entry4.get()
+                find_mrp = "SELECT mrp, stock, product_id FROM raw_inventory WHERE product_name = ?"
+                cur.execute(find_mrp, [product_name])
+                results = cur.fetchall()
+                stock = results[0][1]
+                mrp = results[0][0]
+                if product_qty.isdigit()==True:
+                    if (stock-int(product_qty))>=0:
+                        sp = results[0][0]*int(product_qty)
+                        item = Item(product_name, mrp, int(product_qty))
+                        self.cart.add_item(item)
+                        self.Scrolledtext1.configure(state="normal")
+                        bill_text = "{}\t\t\t\t\t\t{}\t\t\t\t\t   {}\n".format(product_name, product_qty, sp)
+                        self.Scrolledtext1.insert('insert', bill_text)
+                        self.Scrolledtext1.configure(state="disabled")
+                    else:
+                        messagebox.showerror("Oops!", "Out of stock. Check quantity.", parent=biller)
+                else:
+                    messagebox.showerror("Oops!", "Invalid quantity.", parent=biller)
+            else:
+                messagebox.showerror("Oops!", "Choose a product.", parent=biller)
+
+    def remove_product(self):
+        if(self.cart.isEmpty()!=True):
+            self.Scrolledtext1.configure(state="normal")
+            strr = self.Scrolledtext1.get('1.0', END)
+            if strr.find('Total')==-1:
+                try:
+                    self.cart.remove_item()
+                except IndexError:
+                    messagebox.showerror("Oops!", "Cart is empty", parent=biller)
+                else:
+                    self.Scrolledtext1.configure(state="normal")
+                    get_all_bill = (self.Scrolledtext1.get('1.0', END).split("\n"))
+                    new_string = get_all_bill[:len(get_all_bill)-3]
+                    self.Scrolledtext1.delete('1.0', END)
+                    for i in range(len(new_string)):
+                        self.Scrolledtext1.insert('insert', new_string[i])
+                        self.Scrolledtext1.insert('insert','\n')
+                    
+                    self.Scrolledtext1.configure(state="disabled")
+            else:
+                try:
+                    self.cart.remove_item()
+                except IndexError:
+                    messagebox.showerror("Oops!", "Cart is empty", parent=biller)
+                else:
+                    self.Scrolledtext1.delete('1.0', END)
+                    new_li = []
+                    li = strr.split("\n")
+                    for i in range(len(li)):
+                        if len(li[i])!=0:
+                            if li[i].find('Total')==-1:
+                                new_li.append(li[i])
+                            else:
+                                break
+                    new_li.pop()
+                    for j in range(len(new_li)):
+                        self.Scrolledtext1.insert('insert', new_li[j])
+                        self.Scrolledtext1.insert('insert','\n')
+                    self.Scrolledtext1.configure(state="disabled")
+
+        else:
+            messagebox.showerror("Oops!", "Add a product.", parent=biller)
+
+
 
 
     def wel_bill(self):
@@ -574,70 +705,87 @@ class bill_window:
         self.bill_date_message.configure(borderwidth=0)
         self.bill_date_message.configure(background="#ffffff")
 
+    
     def total_bill(self):
-        self.Scrolledtext1.configure(state="normal")
-        divider = "\n\n\n"+("─"*61)
-        self.Scrolledtext1.insert('insert', divider)
-        total = "Total\t\t\t\t\t\t\t\t\t\t\tRs. {}".format(self.totalsp)
-        self.Scrolledtext1.insert('insert', total)
-        divider2 = "\n"+("─"*61)
-        self.Scrolledtext1.insert('insert', divider2)
-        self.Scrolledtext1.configure(state="disabled")
-
-    def gen_bill(self):
-        strr = self.Scrolledtext1.get('1.0', END)
-        self.wel_bill()
-        if(cust_name.get()==""):
-            messagebox.showerror("Oops!", "Please enter a name.", parent=biller)
-        elif(cust_num.get()==""):
-            messagebox.showerror("Oops!", "Please enter a number.", parent=biller)
-        elif valid_phone(cust_num.get())==False:
-            messagebox.showerror("Oops!", "Please enter a valid number.", parent=biller)
-        elif(len(self.cart)==0):
-            messagebox.showerror("Oops!", "Cart is empty.", parent=biller)
-        else: 
+        if self.cart.isEmpty():
+            messagebox.showerror("Oops!", "Add a product.", parent=biller)
+        else:
+            self.Scrolledtext1.configure(state="normal")
+            strr = self.Scrolledtext1.get('1.0', END)
             if strr.find('Total')==-1:
-                self.total_bill()
+                self.Scrolledtext1.configure(state="normal")
+                divider = "\n\n\n"+("─"*61)
+                self.Scrolledtext1.insert('insert', divider)
+                total = "Total\t\t\t\t\t\t\t\t\t\t\tRs. {}".format(self.cart.total())
+                self.Scrolledtext1.insert('insert', total)
+                divider2 = "\n"+("─"*61)
+                self.Scrolledtext1.insert('insert', divider2)
+                self.Scrolledtext1.configure(state="disabled")
             else:
-                self.name_message.insert(END, cust_name.get())
-                self.name_message.configure(state="disabled")
-        
-                self.num_message.insert(END, cust_num.get())
-                self.num_message.configure(state="disabled")
-        
-                cust_new_bill.set(random_bill_number(8))
+                return
 
-                self.bill_message.insert(END, cust_new_bill.get())
-                self.bill_message.configure(state="disabled")
+    state = 1
+    def gen_bill(self):
+
+        if self.state == 1:
+            strr = self.Scrolledtext1.get('1.0', END)
+            self.wel_bill()
+            if(cust_name.get()==""):
+                messagebox.showerror("Oops!", "Please enter a name.", parent=biller)
+            elif(cust_num.get()==""):
+                messagebox.showerror("Oops!", "Please enter a number.", parent=biller)
+            elif valid_phone(cust_num.get())==False:
+                messagebox.showerror("Oops!", "Please enter a valid number.", parent=biller)
+            elif(self.cart.isEmpty()):
+                messagebox.showerror("Oops!", "Cart is empty.", parent=biller)
+            else: 
+                if strr.find('Total')==-1:
+                    self.total_bill()
+                    self.gen_bill()
+                else:
+                    self.name_message.insert(END, cust_name.get())
+                    self.name_message.configure(state="disabled")
             
-                bill_date.set(str(date.today()))
+                    self.num_message.insert(END, cust_num.get())
+                    self.num_message.configure(state="disabled")
+            
+                    cust_new_bill.set(random_bill_number(8))
 
-                self.bill_date_message.insert(END, bill_date.get())
-                self.bill_date_message.configure(state="disabled")
-
+                    self.bill_message.insert(END, cust_new_bill.get())
+                    self.bill_message.configure(state="disabled")
                 
+                    bill_date.set(str(date.today()))
 
-                with sqlite3.connect("./Database/store.db") as db:
-                    cur = db.cursor()
-                insert = (
-                    "INSERT INTO bill(bill_no, date, customer_name, customer_no, bill_details) VALUES(?,?,?,?,?)"
-                )
-                cur.execute(insert, [cust_new_bill.get(), bill_date.get(), cust_name.get(), cust_num.get(), self.Scrolledtext1.get('1.0', END)])
-                db.commit()
+                    self.bill_date_message.insert(END, bill_date.get())
+                    self.bill_date_message.configure(state="disabled")
 
-                for i in self.cart:
-                    for j in i:
-                        pass
-                    update_qty = "UPDATE raw_inventory SET stock = stock - ? WHERE product_name = ?"
-                    cur.execute(update_qty, [i[j], j])
+                    
+
+                    with sqlite3.connect("./Database/store.db") as db:
+                        cur = db.cursor()
+                    insert = (
+                        "INSERT INTO bill(bill_no, date, customer_name, customer_no, bill_details) VALUES(?,?,?,?,?)"
+                    )
+                    cur.execute(insert, [cust_new_bill.get(), bill_date.get(), cust_name.get(), cust_num.get(), self.Scrolledtext1.get('1.0', END)])
                     db.commit()
 
-                messagebox.showinfo("Success!!", "Bill Generated", parent=biller)
+                    self.cart.allCart()
+                    for name, qty in self.cart.dictionary.items():
+                        update_qty = "UPDATE raw_inventory SET stock = stock - ? WHERE product_name = ?"
+                        cur.execute(update_qty, [qty, name])
+                        db.commit()
+                    messagebox.showinfo("Success!!", "Bill Generated", parent=biller)
+                    self.state = 0
+        else:
+            return
+                    
+
 
     def clear_bill(self):
         self.wel_bill()
         self.entry1.delete(0, END)
         self.entry2.delete(0, END)
+        self.entry3.delete(0, END)
         self.name_message.configure(state="normal")
         self.num_message.configure(state="normal")
         self.bill_message.configure(state="normal")
@@ -653,8 +801,10 @@ class bill_window:
         self.bill_message.configure(state="disabled")
         self.bill_date_message.configure(state="disabled")
         self.Scrolledtext1.configure(state="disabled")
-        
+        self.cart.remove_items()
+        self.state = 1
 
+        
     def clear_selection(self):
         self.entry4.delete(0, END)
         self.combo1.configure(state="normal")
@@ -663,21 +813,22 @@ class bill_window:
         self.combo1.delete(0, END)
         self.combo2.delete(0, END)
         self.combo3.delete(0, END)
-        self.qty_label.configure(foreground="#ffffff")
         self.combo2.configure(state="disabled")
         self.combo3.configure(state="disabled")
         self.entry4.configure(state="disabled")
-        self.totalsp = 0.00
-        self.cart.clear()
-        
+        try:
+            self.qty_label.configure(foreground="#ffffff")
+        except AttributeError:
+            pass
+             
     def search_bill(self):
-        self.clear_bill()
+        
         find_bill = "SELECT * FROM bill WHERE bill_no = ?"
         cur.execute(find_bill, [cust_search_bill.get().rstrip()])
         results = cur.fetchall()
         if results:
+            self.clear_bill()
             self.wel_bill()
-            
             self.name_message.insert(END, results[0][2])
             self.name_message.configure(state="disabled")
     
@@ -693,6 +844,7 @@ class bill_window:
             self.Scrolledtext1.configure(state="normal")
             self.Scrolledtext1.insert(END, results[0][4])
             self.Scrolledtext1.configure(state="disabled")
+            self.state = 0
 
         else:
             messagebox.showerror("Error!!", "Bill not found.", parent=biller)
@@ -708,12 +860,10 @@ class bill_window:
 class Inventory:
     pass
 
-
-
-
-
 page1 = login_page(root)
 
 
 root.mainloop()
+
+
 
