@@ -520,7 +520,6 @@ class bill_window:
 
         self.combo1.bind("<<ComboboxSelected>>", self.get_category)
         
-
     def get_category(self, Event):
         self.combo2.configure(state="readonly")
         self.combo2.set('')
@@ -550,9 +549,6 @@ class bill_window:
         self.combo3.configure(values=pro)
         self.combo3.bind("<<ComboboxSelected>>", self.show_qty)
         self.entry4.configure(state="disabled")
-        
-        
-        
 
     def show_qty(self, Event):
         self.entry4.configure(state="normal")
@@ -677,9 +673,6 @@ class bill_window:
         else:
             messagebox.showerror("Oops!", "Add a product.", parent=biller)
 
-
-
-
     def wel_bill(self):
         self.name_message = Text(biller)
         self.name_message.place(relx=0.514, rely=0.452, width=176, height=30)
@@ -704,7 +697,6 @@ class bill_window:
         self.bill_date_message.configure(font="-family {Podkova} -size 10")
         self.bill_date_message.configure(borderwidth=0)
         self.bill_date_message.configure(background="#ffffff")
-
     
     def total_bill(self):
         if self.cart.isEmpty():
@@ -781,8 +773,6 @@ class bill_window:
         else:
             return
                     
-
-
     def clear_bill(self):
         self.wel_bill()
         self.entry1.configure(state="normal")
@@ -808,7 +798,6 @@ class bill_window:
         self.cart.remove_items()
         self.state = 1
 
-        
     def clear_selection(self):
         self.entry4.delete(0, END)
         self.combo1.configure(state="normal")
@@ -826,7 +815,6 @@ class bill_window:
             pass
              
     def search_bill(self):
-        
         find_bill = "SELECT * FROM bill WHERE bill_no = ?"
         cur.execute(find_bill, [cust_search_bill.get().rstrip()])
         results = cur.fetchall()
@@ -854,7 +842,6 @@ class bill_window:
             messagebox.showerror("Error!!", "Bill not found.", parent=biller)
             self.entry3.delete(0, END)
             
-
     def time(self):
         string = strftime("%H:%M:%S %p")
         self.clock.config(text=string)
