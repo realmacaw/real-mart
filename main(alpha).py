@@ -775,6 +775,8 @@ class bill_window:
                         cur.execute(update_qty, [qty, name])
                         db.commit()
                     messagebox.showinfo("Success!!", "Bill Generated", parent=biller)
+                    self.entry1.configure(state="disabled", disabledbackground="#ffffff", disabledforeground="#000000")
+                    self.entry2.configure(state="disabled", disabledbackground="#ffffff", disabledforeground="#000000")
                     self.state = 0
         else:
             return
@@ -783,6 +785,8 @@ class bill_window:
 
     def clear_bill(self):
         self.wel_bill()
+        self.entry1.configure(state="normal")
+        self.entry2.configure(state="normal")
         self.entry1.delete(0, END)
         self.entry2.delete(0, END)
         self.entry3.delete(0, END)
