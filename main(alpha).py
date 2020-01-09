@@ -34,6 +34,15 @@ cust_search_bill = StringVar()
 bill_date = StringVar()
 
 
+new_product_id = StringVar()
+new_product_name = StringVar()
+new_cat = StringVar()
+new_subcat = StringVar()
+new_qty = StringVar()
+new_cp = StringVar()
+new_mrp = StringVar()
+new_vendor_phn = StringVar()
+
 
 with sqlite3.connect("./Database/store.db") as db:
     cur = db.cursor()
@@ -848,8 +857,157 @@ class bill_window:
         self.clock.after(1000, self.time)
 
 
-class Inventory:
-    pass
+class add_product:
+    def __init__(self, top=None):
+        top.geometry("1366x768")
+        top.resizable(0, 0)
+        top.title("Retail Manager")
+
+        self.label1 = Label(root)
+        self.label1.place(relx=0, rely=0, width=1366, height=768)
+        self.img = PhotoImage(file="add_product.png")
+        self.label1.configure(image=self.img)
+
+        self.entry1 = Entry(root)
+        self.entry1.place(relx=0.132, rely=0.296, width=996, height=30)
+        self.entry1.configure(font="-family {Poppins} -size 12")
+        self.entry1.configure(relief="flat")
+        self.entry1.configure(textvariable=new_product_name)
+
+        self.entry2 = Entry(root)
+        self.entry2.place(relx=0.132, rely=0.413, width=374, height=30)
+        self.entry2.configure(font="-family {Poppins} -size 12")
+        self.entry2.configure(relief="flat")
+        self.entry2.configure(textvariable=new_cat)
+
+        self.r2 = root.register(self.testint)
+
+        self.entry3 = Entry(root)
+        self.entry3.place(relx=0.132, rely=0.529, width=374, height=30)
+        self.entry3.configure(font="-family {Poppins} -size 12")
+        self.entry3.configure(relief="flat")
+        self.entry3.configure(textvariable=new_qty)
+        self.entry3.configure(validate="key", validatecommand=(self.r2, "%P"))
+
+        self.entry4 = Entry(root)
+        self.entry4.place(relx=0.132, rely=0.646, width=374, height=30)
+        self.entry4.configure(font="-family {Poppins} -size 12")
+        self.entry4.configure(relief="flat")
+        self.entry4.configure(textvariable=new_mrp)
+
+        self.entry6 = Entry(root)
+        self.entry6.place(relx=0.527, rely=0.413, width=374, height=30)
+        self.entry6.configure(font="-family {Poppins} -size 12")
+        self.entry6.configure(relief="flat")
+        self.entry6.configure(textvariable=new_subcat)
+
+        self.entry7 = Entry(root)
+        self.entry7.place(relx=0.527, rely=0.529, width=374, height=30)
+        self.entry7.configure(font="-family {Poppins} -size 12")
+        self.entry7.configure(relief="flat")
+        self.entry7.configure(textvariable=new_cp)
+
+        self.entry8 = Entry(root)
+        self.entry8.place(relx=0.527, rely=0.646, width=374, height=30)
+        self.entry8.configure(font="-family {Poppins} -size 12")
+        self.entry8.configure(relief="flat")
+        self.entry8.configure(textvariable=new_vendor_phn)
+
+        self.button1 = Button(root)
+        self.button1.place(relx=0.408, rely=0.836, width=96, height=34)
+        self.button1.configure(relief="flat")
+        self.button1.configure(overrelief="flat")
+        self.button1.configure(activebackground="#CF1E14")
+        self.button1.configure(cursor="hand2")
+        self.button1.configure(foreground="#ffffff")
+        self.button1.configure(background="#CF1E14")
+        self.button1.configure(font="-family {Poppins SemiBold} -size 14")
+        self.button1.configure(borderwidth="0")
+        self.button1.configure(text="""ADD""")
+        self.button1.configure(command=self.add)
+
+        self.button2 = Button(root)
+        self.button2.place(relx=0.526, rely=0.836, width=86, height=34)
+        self.button2.configure(relief="flat")
+        self.button2.configure(overrelief="flat")
+        self.button2.configure(activebackground="#CF1E14")
+        self.button2.configure(cursor="hand2")
+        self.button2.configure(foreground="#ffffff")
+        self.button2.configure(background="#CF1E14")
+        self.button2.configure(font="-family {Poppins SemiBold} -size 14")
+        self.button2.configure(borderwidth="0")
+        self.button2.configure(text="""CLEAR""")
+        self.button2.configure(command=self.clear_bill)
+
+    def add(self):
+        pqty = self.entry3.get()
+        pcat = self.entry2.get()  
+        pmrp = self.entry4.get()  
+        pname = self.entry1.get()  
+        psubcat = self.entry6.get()  
+        pcp = self.entry7.get()  
+        pvendor = self.entry8.get()  
+       
+
+        if pname.strip():
+            if pcat.strip():
+                if psubcat.strip():
+                    if pqty:
+                        if pcp:
+                            try:
+                                float(pcp)
+                            except ValueError:
+                                messagebox.showerror("Oops!", "Invalid cost price.")
+                            else:
+                                if pmrp:
+                                    try:
+                                        float(pmrp)
+                                    except ValueError:
+                                        messagebox.showerror("Oops!", "Invalid MRP.")
+                                    else:
+                                        if valid_phone(pvendor):
+                                            with sqlite3.connect("./Database/store.db") as db:
+                                                cur = db.cursor()
+                                            insert = (
+                                                        "INSERT INTO raw_inventory(product_name, product_cat, product_subcat, stock, mrp, cost_price, vendor_phn) VALUES(?,?,?,?,?,?,?)"
+                                                    )
+                                            cur.execute(insert, [pname, pcat, psubcat, int(pqty), float(pmrp), float(pcp), pvendor])
+                                            db.commit()
+                                            messagebox.showinfo("Success!!", "Product successfully added in inventory.")
+                                        else:
+                                            messagebox.showerror("Oops!", "Invalid phone number.")
+                                else:
+                                    messagebox.showerror("Oops!", "Please enter MRP.")
+                        else:
+                            messagebox.showerror(
+                                "Oops!", "Please enter product cost price."
+                            )
+                    else:
+                        messagebox.showerror("Oops!", "Please enter product quantity.")
+                else:
+                    messagebox.showerror("Oops!", "Please enter product sub-category.")
+            else:
+                messagebox.showerror("Oops!", "Please enter product category.")
+        else:
+            messagebox.showerror("Oops!", "Please enter product name")
+
+    def clear_bill(self):
+        self.entry1.delete(0, END)
+        self.entry2.delete(0, END)
+        self.entry3.delete(0, END)
+        self.entry4.delete(0, END)
+        self.entry6.delete(0, END)
+        self.entry7.delete(0, END)
+        self.entry8.delete(0, END)
+
+    def testint(self, val):
+        if val.isdigit():
+            return True
+        elif val == "":
+            return True
+        return False
+
+
 
 page1 = login_page(root)
 
