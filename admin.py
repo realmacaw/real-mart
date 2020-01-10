@@ -118,6 +118,7 @@ def exitt():
 def inventory():
     adm.withdraw()
     global inv
+    global page3
     inv = Toplevel()
     page3 = Inventory(inv)
     page3.time()
@@ -128,6 +129,7 @@ def inventory():
 def employee():
     adm.withdraw()
     global emp
+    global page5
     emp = Toplevel()
     page5 = Employee(emp)
     page5.time()
@@ -324,6 +326,7 @@ class Inventory:
         self.button4.configure(font="-family {Poppins SemiBold} -size 12")
         self.button4.configure(borderwidth="0")
         self.button4.configure(text="""UPDATE PRODUCT""")
+        self.button4.configure(command=self.update_product)
 
         self.button5 = Button(inv)
         self.button5.place(relx=0.052, rely=0.57, width=306, height=28)
@@ -465,7 +468,35 @@ class Inventory:
             messagebox.showerror("Error!!","Please select a product.", parent=inv)
 
     def update_product(self):
-        pass
+        if len(self.sel)==1:
+            global p_update
+            p_update = Toplevel()
+            page9 = Update_Product(p_update)
+            page9.time()
+            p_update.protocol("WM_DELETE_WINDOW", self.ex2)
+            global valll
+            valll = []
+            for i in self.sel:
+                for j in self.tree.item(i)["values"]:
+                    valll.append(j)
+
+            page9.entry1.insert(0, valll[1])
+            page9.entry2.insert(0, valll[2])
+            page9.entry3.insert(0, valll[4])
+            page9.entry4.insert(0, valll[5])
+            page9.entry6.insert(0, valll[3])
+            page9.entry7.insert(0, valll[6])
+            page9.entry8.insert(0, valll[7])
+
+
+        elif len(self.sel)==0:
+            messagebox.showerror("Error","Please choose a product to update.", parent=inv)
+        else:
+            messagebox.showerror("Error","Can only update one product at a time.", parent=inv)
+
+        p_update.mainloop()
+
+    
 
     def add_product(self):
         global p_add
@@ -484,6 +515,13 @@ class Inventory:
         if sure == True:
             inv.destroy()
             adm.deiconify()
+
+    def ex2(self):
+        sure = messagebox.askyesno("Exit","Are you sure you want to exit?", parent=p_update)
+        if sure == True:
+            p_update.destroy()
+            inv.deiconify()
+
 
 
     def Logout(self):
@@ -651,6 +689,169 @@ class add_product:
         self.clock.after(1000, self.time)
 
 
+class Update_Product:
+    def __init__(self, top=None):
+        top.geometry("1366x768")
+        top.resizable(0, 0)
+        top.title("Add Product")
+
+        self.label1 = Label(p_update)
+        self.label1.place(relx=0, rely=0, width=1366, height=768)
+        self.img = PhotoImage(file="update_product.png")
+        self.label1.configure(image=self.img)
+
+        self.clock = Label(p_update)
+        self.clock.place(relx=0.84, rely=0.065, width=102, height=36)
+        self.clock.configure(font="-family {Poppins Light} -size 12")
+        self.clock.configure(foreground="#000000")
+        self.clock.configure(background="#ffffff")
+
+        self.entry1 = Entry(p_update)
+        self.entry1.place(relx=0.132, rely=0.296, width=996, height=30)
+        self.entry1.configure(font="-family {Poppins} -size 12")
+        self.entry1.configure(relief="flat")
+
+        self.entry2 = Entry(p_update)
+        self.entry2.place(relx=0.132, rely=0.413, width=374, height=30)
+        self.entry2.configure(font="-family {Poppins} -size 12")
+        self.entry2.configure(relief="flat")
+
+        self.r2 = root.register(self.testint)
+
+        self.entry3 = Entry(p_update)
+        self.entry3.place(relx=0.132, rely=0.529, width=374, height=30)
+        self.entry3.configure(font="-family {Poppins} -size 12")
+        self.entry3.configure(relief="flat")
+        self.entry3.configure(validate="key", validatecommand=(self.r2, "%P"))
+
+        self.entry4 = Entry(p_update)
+        self.entry4.place(relx=0.132, rely=0.646, width=374, height=30)
+        self.entry4.configure(font="-family {Poppins} -size 12")
+        self.entry4.configure(relief="flat")
+       
+
+        self.entry6 = Entry(p_update)
+        self.entry6.place(relx=0.527, rely=0.413, width=374, height=30)
+        self.entry6.configure(font="-family {Poppins} -size 12")
+        self.entry6.configure(relief="flat")
+       
+
+        self.entry7 = Entry(p_update)
+        self.entry7.place(relx=0.527, rely=0.529, width=374, height=30)
+        self.entry7.configure(font="-family {Poppins} -size 12")
+        self.entry7.configure(relief="flat")
+       
+
+        self.entry8 = Entry(p_update)
+        self.entry8.place(relx=0.527, rely=0.646, width=374, height=30)
+        self.entry8.configure(font="-family {Poppins} -size 12")
+        self.entry8.configure(relief="flat")
+       
+
+        self.button1 = Button(p_update)
+        self.button1.place(relx=0.408, rely=0.836, width=96, height=34)
+        self.button1.configure(relief="flat")
+        self.button1.configure(overrelief="flat")
+        self.button1.configure(activebackground="#CF1E14")
+        self.button1.configure(cursor="hand2")
+        self.button1.configure(foreground="#ffffff")
+        self.button1.configure(background="#CF1E14")
+        self.button1.configure(font="-family {Poppins SemiBold} -size 14")
+        self.button1.configure(borderwidth="0")
+        self.button1.configure(text="""UPDATE""")
+        self.button1.configure(command=self.update)
+
+        self.button2 = Button(p_update)
+        self.button2.place(relx=0.526, rely=0.836, width=86, height=34)
+        self.button2.configure(relief="flat")
+        self.button2.configure(overrelief="flat")
+        self.button2.configure(activebackground="#CF1E14")
+        self.button2.configure(cursor="hand2")
+        self.button2.configure(foreground="#ffffff")
+        self.button2.configure(background="#CF1E14")
+        self.button2.configure(font="-family {Poppins SemiBold} -size 14")
+        self.button2.configure(borderwidth="0")
+        self.button2.configure(text="""CLEAR""")
+        self.button2.configure(command=self.clearr)
+
+    def update(self):
+        pqty = self.entry3.get()
+        pcat = self.entry2.get()  
+        pmrp = self.entry4.get()  
+        pname = self.entry1.get()  
+        psubcat = self.entry6.get()  
+        pcp = self.entry7.get()  
+        pvendor = self.entry8.get()  
+       
+
+        if pname.strip():
+            if pcat.strip():
+                if psubcat.strip():
+                    if pqty:
+                        if pcp:
+                            try:
+                                float(pcp)
+                            except ValueError:
+                                messagebox.showerror("Oops!", "Invalid cost price.", parent=p_update)
+                            else:
+                                if pmrp:
+                                    try:
+                                        float(pmrp)
+                                    except ValueError:
+                                        messagebox.showerror("Oops!", "Invalid MRP.", parent=p_update)
+                                    else:
+                                        if valid_phone(pvendor):
+                                            product_id = valll[0]
+                                            with sqlite3.connect("./Database/store.db") as db:
+                                                cur = db.cursor()
+                                            update = (
+                                            "UPDATE raw_inventory SET product_name = ?, product_cat = ?, product_subcat = ?, stock = ?, mrp = ?, cost_price = ?, vendor_phn = ? WHERE product_id = ?"
+                                            )
+                                            cur.execute(update, [pname, pcat, psubcat, int(pqty), float(pmrp), float(pcp), pvendor, product_id])
+                                            db.commit()
+                                            messagebox.showinfo("Success!!", "Product successfully updated in inventory.", parent=p_update)
+                                            valll.clear()
+                                            Inventory.sel.clear()
+                                            page3.tree.delete(*page3.tree.get_children())
+                                            page3.DisplayData()
+                                            p_update.destroy()
+                                        else:
+                                            messagebox.showerror("Oops!", "Invalid phone number.", parent=p_update)
+                                else:
+                                    messagebox.showerror("Oops!", "Please enter MRP.", parent=p_update)
+                        else:
+                            messagebox.showerror("Oops!", "Please enter product cost price.", parent=p_update)
+                    else:
+                        messagebox.showerror("Oops!", "Please enter product quantity.", parent=p_update)
+                else:
+                    messagebox.showerror("Oops!", "Please enter product sub-category.", parent=p_update)
+            else:
+                messagebox.showerror("Oops!", "Please enter product category.", parent=p_update)
+        else:
+            messagebox.showerror("Oops!", "Please enter product name", parent=p_update)
+
+    def clearr(self):
+        self.entry1.delete(0, END)
+        self.entry2.delete(0, END)
+        self.entry3.delete(0, END)
+        self.entry4.delete(0, END)
+        self.entry6.delete(0, END)
+        self.entry7.delete(0, END)
+        self.entry8.delete(0, END)
+
+    def testint(self, val):
+        if val.isdigit():
+            return True
+        elif val == "":
+            return True
+        return False
+
+    def time(self):
+        string = strftime("%H:%M:%S %p")
+        self.clock.config(text=string)
+        self.clock.after(1000, self.time)
+    
+
 
 class Employee:
     def __init__(self, top=None):
@@ -732,6 +933,7 @@ class Employee:
         self.button4.configure(font="-family {Poppins SemiBold} -size 12")
         self.button4.configure(borderwidth="0")
         self.button4.configure(text="""UPDATE EMPLOYEE""")
+        self.button4.configure(command=self.update_emp)
 
         self.button5 = Button(emp)
         self.button5.place(relx=0.052, rely=0.57, width=306, height=28)
@@ -804,7 +1006,6 @@ class Employee:
         self.tree.column("#5", stretch=NO, minwidth=0, width=80)
         self.tree.column("#6", stretch=NO, minwidth=0, width=80)
         self.tree.column("#7", stretch=NO, minwidth=0, width=80)
-        #self.tree.column("#8", stretch=NO, minwidth=0, width=100)
 
         self.DisplayData()
 
@@ -875,7 +1076,33 @@ class Employee:
             messagebox.showerror("Error!!","Please select an employee.", parent=emp)
 
     def update_emp(self):
-        pass
+        
+        if len(self.sel)==1:
+            global e_update
+            e_update = Toplevel()
+            page8 = Update_Employee(e_update)
+            page8.time()
+            e_update.protocol("WM_DELETE_WINDOW", self.ex2)
+            global vall
+            vall = []
+            for i in self.sel:
+                for j in self.tree.item(i)["values"]:
+                    vall.append(j)
+            
+            page8.entry1.insert(0, vall[1])
+            page8.entry2.insert(0, vall[2])
+            page8.entry3.insert(0, vall[4])
+            page8.entry4.insert(0, vall[6])
+            page8.entry5.insert(0, vall[3])
+            page8.entry6.insert(0, vall[5])
+            e_update.mainloop()
+        elif len(self.sel)==0:
+            messagebox.showerror("Error","Please select an employee to update.")
+        else:
+            messagebox.showerror("Error","Can only update one employee at a time.")
+
+        
+
 
     def add_emp(self):
         global e_add
@@ -885,10 +1112,17 @@ class Employee:
         e_add.protocol("WM_DELETE_WINDOW", self.ex)
         e_add.mainloop()
 
+
     def ex(self):
         e_add.destroy()
         self.tree.delete(*self.tree.get_children())
         self.DisplayData()   
+
+    def ex2(self):
+        e_update.destroy()
+        self.tree.delete(*self.tree.get_children())
+        self.DisplayData()  
+
 
 
     def time(self):
@@ -1058,6 +1292,159 @@ class add_employee:
         self.entry4.delete(0, END)
         self.entry5.delete(0, END)
         self.entry6.delete(0, END)
+
+
+class Update_Employee:
+    def __init__(self, top=None):
+        top.geometry("1366x768")
+        top.resizable(0, 0)
+        top.title("Update Employee")
+
+        self.label1 = Label(e_update)
+        self.label1.place(relx=0, rely=0, width=1366, height=768)
+        self.img = PhotoImage(file="update_employee.png")
+        self.label1.configure(image=self.img)
+
+        self.clock = Label(e_update)
+        self.clock.place(relx=0.84, rely=0.065, width=102, height=36)
+        self.clock.configure(font="-family {Poppins Light} -size 12")
+        self.clock.configure(foreground="#000000")
+        self.clock.configure(background="#ffffff")
+
+        self.r1 = e_update.register(self.testint)
+        self.r2 = e_update.register(self.testchar)
+
+        self.entry1 = Entry(e_update)
+        self.entry1.place(relx=0.132, rely=0.296, width=374, height=30)
+        self.entry1.configure(font="-family {Poppins} -size 12")
+        self.entry1.configure(relief="flat")
+        
+
+        self.entry2 = Entry(e_update)
+        self.entry2.place(relx=0.132, rely=0.413, width=374, height=30)
+        self.entry2.configure(font="-family {Poppins} -size 12")
+        self.entry2.configure(relief="flat")
+        self.entry2.configure(validate="key", validatecommand=(self.r1, "%P"))
+
+        self.entry3 = Entry(e_update)
+        self.entry3.place(relx=0.132, rely=0.529, width=374, height=30)
+        self.entry3.configure(font="-family {Poppins} -size 12")
+        self.entry3.configure(relief="flat")
+        self.entry3.configure(validate="key", validatecommand=(self.r1, "%P"))
+
+        self.entry4 = Entry(e_update)
+        self.entry4.place(relx=0.527, rely=0.296, width=374, height=30)
+        self.entry4.configure(font="-family {Poppins} -size 12")
+        self.entry4.configure(relief="flat")
+        self.entry4.configure(validate="key", validatecommand=(self.r2, "%P"))
+
+        self.entry5 = Entry(e_update)
+        self.entry5.place(relx=0.527, rely=0.413, width=374, height=30)
+        self.entry5.configure(font="-family {Poppins} -size 12")
+        self.entry5.configure(relief="flat")
+
+        self.entry6 = Entry(e_update)
+        self.entry6.place(relx=0.527, rely=0.529, width=374, height=30)
+        self.entry6.configure(font="-family {Poppins} -size 12")
+        self.entry6.configure(relief="flat")
+        self.entry6.configure(show="*")
+
+        self.button1 = Button(e_update)
+        self.button1.place(relx=0.408, rely=0.836, width=96, height=34)
+        self.button1.configure(relief="flat")
+        self.button1.configure(overrelief="flat")
+        self.button1.configure(activebackground="#CF1E14")
+        self.button1.configure(cursor="hand2")
+        self.button1.configure(foreground="#ffffff")
+        self.button1.configure(background="#CF1E14")
+        self.button1.configure(font="-family {Poppins SemiBold} -size 14")
+        self.button1.configure(borderwidth="0")
+        self.button1.configure(text="""UPDATE""")
+        self.button1.configure(command=self.update)
+
+        self.button2 = Button(e_update)
+        self.button2.place(relx=0.526, rely=0.836, width=86, height=34)
+        self.button2.configure(relief="flat")
+        self.button2.configure(overrelief="flat")
+        self.button2.configure(activebackground="#CF1E14")
+        self.button2.configure(cursor="hand2")
+        self.button2.configure(foreground="#ffffff")
+        self.button2.configure(background="#CF1E14")
+        self.button2.configure(font="-family {Poppins SemiBold} -size 14")
+        self.button2.configure(borderwidth="0")
+        self.button2.configure(text="""CLEAR""")
+        self.button2.configure(command=self.clearr)
+
+    def update(self):
+        ename = self.entry1.get()
+        econtact = self.entry2.get()
+        eaddhar = self.entry3.get()
+        edes = self.entry4.get()
+        eadd = self.entry5.get()
+        epass = self.entry6.get()
+
+        if ename.strip():
+            if valid_phone(econtact):
+                if valid_aadhar(eaddhar):
+                    if edes:
+                        if eadd:
+                            if epass:
+                                emp_id = vall[0]
+                                update = (
+                                            "UPDATE employee SET name = ?, contact_num = ?, address = ?, aadhar_num = ?, password = ?, designation = ? WHERE emp_id = ?"
+                                        )
+                                cur.execute(update, [ename, econtact, eadd, eaddhar, epass, edes, emp_id])
+                                db.commit()
+                                messagebox.showinfo("Success!!", "Employee ID: {} successfully updated in database.".format(emp_id), parent=e_update)
+                                vall.clear()
+                                page5.tree.delete(*page5.tree.get_children())
+                                page5.DisplayData()
+                                Employee.sel.clear()
+                                e_update.destroy()
+                            else:
+                                messagebox.showerror("Oops!", "Please enter a password.", parent=e_add)
+                        else:
+                            messagebox.showerror("Oops!", "Please enter address.", parent=e_add)
+                    else:
+                        messagebox.showerror("Oops!", "Please enter designation.", parent=e_add)
+                else:
+                    messagebox.showerror("Oops!", "Invalid Aadhar number.", parent=e_add)
+            else:
+                messagebox.showerror("Oops!", "Invalid phone number.", parent=e_add)
+        else:
+            messagebox.showerror("Oops!", "Please enter employee name.", parent=e_add)
+
+
+    def clearr(self):
+        self.entry1.delete(0, END)
+        self.entry2.delete(0, END)
+        self.entry3.delete(0, END)
+        self.entry4.delete(0, END)
+        self.entry5.delete(0, END)
+        self.entry6.delete(0, END)
+
+
+
+    def testint(self, val):
+        if val.isdigit():
+            return True
+        elif val == "":
+            return True
+        return False
+
+    def testchar(self, val):
+        if val.isalpha():
+            return True
+        elif val == "":
+            return True
+        return False
+
+    def time(self):
+        string = strftime("%H:%M:%S %p")
+        self.clock.config(text=string)
+        self.clock.after(1000, self.time)
+
+
         
 
 class Invoice:
