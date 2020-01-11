@@ -9,7 +9,7 @@ from tkinter import ttk
 from time import strftime
 from datetime import date
 
-root = Tk()
+root = TK()
 root.geometry("1366x768")
 root.title("Inventory")
 
