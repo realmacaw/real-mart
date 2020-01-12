@@ -1,0 +1,1 @@
+for /F "delims=;" %%a in ('dir C:\Users\rishi\Desktop\New folder\fonts /B /A-D-H-S /S') do fontview %%a

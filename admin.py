@@ -48,7 +48,7 @@ class login_page:
 
         self.label1 = Label(root)
         self.label1.place(relx=0, rely=0, width=1366, height=768)
-        self.img = PhotoImage(file="admin_login.png")
+        self.img = PhotoImage(file="./images/admin_login.png")
         self.label1.configure(image=self.img)
         
 
@@ -159,7 +159,7 @@ class Admin_Page:
 
         self.label1 = Label(adm)
         self.label1.place(relx=0, rely=0, width=1366, height=768)
-        self.img = PhotoImage(file="admin.png")
+        self.img = PhotoImage(file="./images/admin.png")
         self.label1.configure(image=self.img)
 
         self.message = Label(adm)
@@ -254,7 +254,7 @@ class Inventory:
 
         self.label1 = Label(inv)
         self.label1.place(relx=0, rely=0, width=1366, height=768)
-        self.img = PhotoImage(file="inventory.png")
+        self.img = PhotoImage(file="./images/inventory.png")
         self.label1.configure(image=self.img)
 
         self.message = Label(inv)
@@ -540,7 +540,7 @@ class add_product:
 
         self.label1 = Label(p_add)
         self.label1.place(relx=0, rely=0, width=1366, height=768)
-        self.img = PhotoImage(file="add_product.png")
+        self.img = PhotoImage(file="./images/add_product.png")
         self.label1.configure(image=self.img)
 
         self.clock = Label(p_add)
@@ -697,7 +697,7 @@ class Update_Product:
 
         self.label1 = Label(p_update)
         self.label1.place(relx=0, rely=0, width=1366, height=768)
-        self.img = PhotoImage(file="update_product.png")
+        self.img = PhotoImage(file="./images/update_product.png")
         self.label1.configure(image=self.img)
 
         self.clock = Label(p_update)
@@ -861,7 +861,7 @@ class Employee:
 
         self.label1 = Label(emp)
         self.label1.place(relx=0, rely=0, width=1366, height=768)
-        self.img = PhotoImage(file="employee.png")
+        self.img = PhotoImage(file="./images/employee.png")
         self.label1.configure(image=self.img)
 
         self.message = Label(emp)
@@ -1155,7 +1155,7 @@ class add_employee:
 
         self.label1 = Label(e_add)
         self.label1.place(relx=0, rely=0, width=1366, height=768)
-        self.img = PhotoImage(file="add_employee.png")
+        self.img = PhotoImage(file="./images/add_employee.png")
         self.label1.configure(image=self.img)
 
         self.clock = Label(e_add)
@@ -1302,7 +1302,7 @@ class Update_Employee:
 
         self.label1 = Label(e_update)
         self.label1.place(relx=0, rely=0, width=1366, height=768)
-        self.img = PhotoImage(file="update_employee.png")
+        self.img = PhotoImage(file="./images/update_employee.png")
         self.label1.configure(image=self.img)
 
         self.clock = Label(e_update)
@@ -1455,7 +1455,7 @@ class Invoice:
 
         self.label1 = Label(invoice)
         self.label1.place(relx=0, rely=0, width=1366, height=768)
-        self.img = PhotoImage(file="invoices.png")
+        self.img = PhotoImage(file="./images/invoices.png")
         self.label1.configure(image=self.img)
 
         self.message = Label(invoice)

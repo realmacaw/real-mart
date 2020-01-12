@@ -93,7 +93,7 @@ class login_page:
 
         self.label1 = Label(root)
         self.label1.place(relx=0, rely=0, width=1366, height=768)
-        self.img = PhotoImage(file="employee_login.png")
+        self.img = PhotoImage(file="./images/employee_login.png")
         self.label1.configure(image=self.img)
 
         self.entry1 = Entry(root)
@@ -173,7 +173,7 @@ class bill_window:
 
         self.label = Label(biller)
         self.label.place(relx=0, rely=0, width=1366, height=768)
-        self.img = PhotoImage(file="bill_window.png")
+        self.img = PhotoImage(file="./images/bill_window.png")
         self.label.configure(image=self.img)
 
         self.message = Label(biller)
