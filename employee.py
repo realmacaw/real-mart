@@ -560,7 +560,7 @@ class bill_window:
                 self.Scrolledtext1.configure(state="normal")
                 divider = "\n\n\n"+("─"*61)
                 self.Scrolledtext1.insert('insert', divider)
-                total = "Total\t\t\t\t\t\t\t\t\t\t\tRs. {}".format(self.cart.total())
+                total = "\nTotal\t\t\t\t\t\t\t\t\t\t\tRs. {}".format(self.cart.total())
                 self.Scrolledtext1.insert('insert', total)
                 divider2 = "\n"+("─"*61)
                 self.Scrolledtext1.insert('insert', divider2)
@@ -688,6 +688,10 @@ class bill_window:
             self.Scrolledtext1.configure(state="normal")
             self.Scrolledtext1.insert(END, results[0][4])
             self.Scrolledtext1.configure(state="disabled")
+
+            self.entry1.configure(state="disabled", disabledbackground="#ffffff", disabledforeground="#000000")
+            self.entry2.configure(state="disabled", disabledbackground="#ffffff", disabledforeground="#000000")
+
             self.state = 0
 
         else:

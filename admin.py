@@ -8,6 +8,7 @@ from tkinter import messagebox
 from tkinter import ttk
 from time import strftime
 from datetime import date
+from tkinter import scrolledtext as tkst
 
 root = Tk()
 root.geometry("1366x768")
@@ -1539,6 +1540,7 @@ class Invoice:
         self.tree.configure(selectmode="extended")
 
         self.tree.bind("<<TreeviewSelect>>", self.on_tree_select)
+        self.tree.bind("<Double-1>", self.double_tap)
 
         self.scrollbary.configure(command=self.tree.yview)
         self.scrollbarx.configure(command=self.tree.xview)
@@ -1583,6 +1585,20 @@ class Invoice:
         for i in self.tree.selection():
             if i not in self.sel:
                 self.sel.append(i)
+
+    def double_tap(self, Event):
+        item = self.tree.identify('item', Event.x, Event.y)
+        global bill_num
+        bill_num = self.tree.item(item)['values'][0]
+        
+
+        global bill
+        bill = Toplevel()
+        pg = open_bill(bill)
+        #bill.protocol("WM_DELETE_WINDOW", exitt)
+        bill.mainloop()
+
+        
 
 
     def delete_invoice(self):
@@ -1649,6 +1665,70 @@ class Invoice:
         if sure == True:
             invoice.destroy()
             adm.deiconify()
+
+
+class open_bill:
+    def __init__(self, top=None):
+        
+        top.geometry("765x488")
+        top.resizable(0, 0)
+        top.title("Bill")
+
+        self.label1 = Label(bill)
+        self.label1.place(relx=0, rely=0, width=765, height=488)
+        self.img = PhotoImage(file="./images/bill.png")
+        self.label1.configure(image=self.img)
+        
+        self.name_message = Text(bill)
+        self.name_message.place(relx=0.178, rely=0.205, width=176, height=30)
+        self.name_message.configure(font="-family {Podkova} -size 10")
+        self.name_message.configure(borderwidth=0)
+        self.name_message.configure(background="#ffffff")
+
+        self.num_message = Text(bill)
+        self.num_message.place(relx=0.854, rely=0.205, width=90, height=30)
+        self.num_message.configure(font="-family {Podkova} -size 10")
+        self.num_message.configure(borderwidth=0)
+        self.num_message.configure(background="#ffffff")
+
+        self.bill_message = Text(bill)
+        self.bill_message.place(relx=0.150, rely=0.243, width=176, height=26)
+        self.bill_message.configure(font="-family {Podkova} -size 10")
+        self.bill_message.configure(borderwidth=0)
+        self.bill_message.configure(background="#ffffff")
+
+        self.bill_date_message = Text(bill)
+        self.bill_date_message.place(relx=0.780, rely=0.243, width=90, height=26)
+        self.bill_date_message.configure(font="-family {Podkova} -size 10")
+        self.bill_date_message.configure(borderwidth=0)
+        self.bill_date_message.configure(background="#ffffff")
+
+
+        self.Scrolledtext1 = tkst.ScrolledText(top)
+        self.Scrolledtext1.place(relx=0.044, rely=0.41, width=695, height=284)
+        self.Scrolledtext1.configure(borderwidth=0)
+        self.Scrolledtext1.configure(font="-family {Podkova} -size 8")
+        self.Scrolledtext1.configure(state="disabled")
+
+        find_bill = "SELECT * FROM bill WHERE bill_no = ?"
+        cur.execute(find_bill, [bill_num])
+        results = cur.fetchall()
+        if results:
+            self.name_message.insert(END, results[0][2])
+            self.name_message.configure(state="disabled")
+    
+            self.num_message.insert(END, results[0][3])
+            self.num_message.configure(state="disabled")
+    
+            self.bill_message.insert(END, results[0][0])
+            self.bill_message.configure(state="disabled")
+
+            self.bill_date_message.insert(END, results[0][1])
+            self.bill_date_message.configure(state="disabled")
+
+            self.Scrolledtext1.configure(state="normal")
+            self.Scrolledtext1.insert(END, results[0][4])
+            self.Scrolledtext1.configure(state="disabled")
 
 page1 = login_page(root)
 
