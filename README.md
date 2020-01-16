@@ -8,8 +8,8 @@ This project has been created by me for my GUI IN PYTHON mini-project. Please fe
 `Python 3.7`
 
 ### Screenshots
-![alt text](https://raw.githubusercontent.com/realmacaw/real-mart/blob/master/images/employee_login.png)
-![alt text](https://raw.githubusercontent.com/realmacaw/real-mart/blob/master/images/bill_window.png)
-![alt text](https://raw.githubusercontent.com/realmacaw/real-mart/blob/master/images/update_employee.png)
-![alt text](https://raw.githubusercontent.com/realmacaw/real-mart/blob/master/images/update_product.png)
+![alt text](https://github.com/realmacaw/real-mart/blob/master/images/employee_login.png)
+![alt text](https://github.com/realmacaw/real-mart/blob/master/images/bill_window.png)
+![alt text](https://github.com/realmacaw/real-mart/blob/master/images/update_employee.png)
+![alt text](https://github.com/realmacaw/real-mart/blob/master/images/update_product.png)
 
