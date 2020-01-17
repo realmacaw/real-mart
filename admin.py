@@ -79,7 +79,7 @@ class login_page:
         self.button1.configure(text="""LOGIN""")
         self.button1.configure(command=self.login)
 
-    def login(self):
+    def login(self, Event=None):
         username = user.get()
         password = passwd.get()
 
@@ -1731,5 +1731,5 @@ class open_bill:
             self.Scrolledtext1.configure(state="disabled")
 
 page1 = login_page(root)
-
+root.bind("<Return>", login_page.login)
 root.mainloop()

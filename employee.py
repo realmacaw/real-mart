@@ -48,7 +48,7 @@ def valid_phone(phn):
         return True
     return False
 
-def login():
+def login(Event=None):
     global username
     username = user.get()
     password = passwd.get()
@@ -705,9 +705,6 @@ class bill_window:
 
 
 page1 = login_page(root)
-
-
+root.bind("<Return>", login)
 root.mainloop()
-
-
 
