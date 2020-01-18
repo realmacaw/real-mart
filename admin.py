@@ -9,10 +9,11 @@ from tkinter import ttk
 from time import strftime
 from datetime import date
 from tkinter import scrolledtext as tkst
+# ============================================
 
 root = Tk()
 root.geometry("1366x768")
-root.title("Inventory")
+root.title("Retail Manager(ADMIN)")
 
 
 user = StringVar()
@@ -21,14 +22,13 @@ fname = StringVar()
 lname = StringVar()
 
 
+with sqlite3.connect("./Database/store.db") as db:
+    cur = db.cursor()
+
 def random_emp_id(stringLength):
     Digits = string.digits
     strr=''.join(random.choice(Digits) for i in range(stringLength-3))
     return ('EMP'+strr)
-
-
-with sqlite3.connect("./Database/store.db") as db:
-    cur = db.cursor()
 
 def valid_phone(phn):
     if re.match(r"[789]\d{9}$", phn):
@@ -501,6 +501,7 @@ class Inventory:
 
     def add_product(self):
         global p_add
+        global page4
         p_add = Toplevel()
         page4 = add_product(p_add)
         page4.time()
@@ -560,7 +561,7 @@ class add_product:
         self.entry2.configure(font="-family {Poppins} -size 12")
         self.entry2.configure(relief="flat")
 
-        self.r2 = root.register(self.testint)
+        self.r2 = p_add.register(self.testint)
 
         self.entry3 = Entry(p_add)
         self.entry3.place(relx=0.132, rely=0.529, width=374, height=30)
@@ -590,6 +591,7 @@ class add_product:
         self.entry8.place(relx=0.527, rely=0.646, width=374, height=30)
         self.entry8.configure(font="-family {Poppins} -size 12")
         self.entry8.configure(relief="flat")
+        self.entry8.configure(validate="key", validatecommand=(self.r2, "%P"))
        
 
         self.button1 = Button(p_add)
@@ -653,6 +655,10 @@ class add_product:
                                             cur.execute(insert, [pname, pcat, psubcat, int(pqty), float(pmrp), float(pcp), pvendor])
                                             db.commit()
                                             messagebox.showinfo("Success!!", "Product successfully added in inventory.", parent=p_add)
+                                            p_add.destroy()
+                                            page3.tree.delete(*page3.tree.get_children())
+                                            page3.DisplayData()
+                                            p_add.destroy()
                                         else:
                                             messagebox.showerror("Oops!", "Invalid phone number.", parent=p_add)
                                 else:
@@ -717,7 +723,7 @@ class Update_Product:
         self.entry2.configure(font="-family {Poppins} -size 12")
         self.entry2.configure(relief="flat")
 
-        self.r2 = root.register(self.testint)
+        self.r2 = p_update.register(self.testint)
 
         self.entry3 = Entry(p_update)
         self.entry3.place(relx=0.132, rely=0.529, width=374, height=30)
