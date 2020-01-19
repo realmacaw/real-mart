@@ -154,9 +154,13 @@ class Cart:
             return True
         
     def allCart(self):
+        print(self.items)
         for i in self.items:
-            self.dictionary.update({i.product_name:i.qty})
-
+            if (i.product_name in self.dictionary):
+                self.dictionary[i.product_name] += i.qty
+            else:
+                self.dictionary.update({i.product_name:i.qty})
+    
 
 def exitt():
     sure = messagebox.askyesno("Exit","Are you sure you want to exit?", parent=biller)
@@ -612,8 +616,8 @@ class bill_window:
                     )
                     cur.execute(insert, [cust_new_bill.get(), bill_date.get(), cust_name.get(), cust_num.get(), self.Scrolledtext1.get('1.0', END)])
                     db.commit()
-
-                    self.cart.allCart()
+                    #print(self.cart.items)
+                    print(self.cart.allCart())
                     for name, qty in self.cart.dictionary.items():
                         update_qty = "UPDATE raw_inventory SET stock = stock - ? WHERE product_name = ?"
                         cur.execute(update_qty, [qty, name])
