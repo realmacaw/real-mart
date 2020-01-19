@@ -154,7 +154,6 @@ class Cart:
             return True
         
     def allCart(self):
-        print(self.items)
         for i in self.items:
             if (i.product_name in self.dictionary):
                 self.dictionary[i.product_name] += i.qty
