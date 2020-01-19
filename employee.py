@@ -455,7 +455,7 @@ class bill_window:
                         new_li.append(li[i])
                     else:
                         break
-            for j in range(len(new_li)):
+            for j in range(len(new_li)-1):
                 self.Scrolledtext1.insert('insert', new_li[j])
                 self.Scrolledtext1.insert('insert','\n')
             product_name = self.combo3.get()
@@ -517,7 +517,7 @@ class bill_window:
                             else:
                                 break
                     new_li.pop()
-                    for j in range(len(new_li)):
+                    for j in range(len(new_li)-1):
                         self.Scrolledtext1.insert('insert', new_li[j])
                         self.Scrolledtext1.insert('insert','\n')
                     self.Scrolledtext1.configure(state="disabled")
