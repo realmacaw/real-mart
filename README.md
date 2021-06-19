@@ -1,6 +1,6 @@
 # MINIMALIST RETAIL MANAGEMENT SYSTEM
 
-This project has been created by me for my GUI IN PYTHON mini-project. Please feel free to report issues and download and enjoy.
+This project was made for a mini project in school. Feel free to improve the code quality. Cheers!
 
 ## This repository consists of a GUI-based Retail Management System in Python(using tkinter). 
 
