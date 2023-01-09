@@ -2,6 +2,9 @@
 
 This project was made for a mini project in school. Feel free to improve the code quality. Cheers!
 
+Username: EMP0000 
+Password: admin
+
 ## This repository consists of a GUI-based Retail Management System in Python(using tkinter). 
 
 ### Pre-Requisites
